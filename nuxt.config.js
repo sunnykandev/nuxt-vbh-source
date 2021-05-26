@@ -81,9 +81,9 @@ export default {
   },
   // Axios module configuration: https://go.nuxtjs.dev/config-axios
   axios: {
-    //baseURL: 'https://api.buyavaluebuildhome.com',
-    baseURL: 'http://127.0.0.1:4000',
-  }, 
+    baseURL: 'https://api.buyavaluebuildhome.com',
+    //baseURL: 'http://127.0.0.1:4000',
+  },
 
   auth: {
     localStorage: false,
