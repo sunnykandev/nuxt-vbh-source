@@ -71,9 +71,8 @@
                       </g>
                   </svg>
               </button>
-              <video class="round" :poster="video_poster" style="object-fit:cover;" controls>
-              <source :src="video_src" type="video/mp4">
-              Your browser does not support HTML video.
+              <video class="round" :poster="homepage_contents.main_video_poster" style="object-fit:cover;" :src="homepage_contents.main_video" controls>
+              
               </video>              
           </div>
           <NuxtLink to="/buying_power">
@@ -152,7 +151,7 @@
                                       <p v-html="makeLineBreak(step.contents)">
                                       </p>
                                       <div class="d-flex">
-                                          <v-btn outlined class="px-4 mx-2" rounded color="primary" elevation="0">
+                                          <v-btn :to="step.to" outlined class="px-4 mx-2" rounded color="primary" elevation="0">
                                               <v-icon left style="font-size:20px;">mdi-arrow-right</v-icon>
                                               {{step.btn}}
                                           </v-btn>
@@ -251,7 +250,7 @@
         <center>
           <h2 class="primary--text contact_subtitle">{{homepage_contents.contact_title}}</h2>
           <h1 class="primary--text contact_title">{{homepage_contents.contact_text}}</h1>
-          <v-btn class="px-8 py-6 mx-2 contact_btn" outlined color="primary" elevation="0">     
+          <v-btn class="px-8 py-6 mx-2 contact_btn" outlined color="primary" elevation="0" @click="contactPopup(true)">     
               Contact Us
           </v-btn>
         </center>
@@ -368,6 +367,7 @@ export default {
     },
     ...mapMutations({
         savePageContents:'localStorage/savePageContents',
+        contactPopup:'global/contactPopup' 
     })
   }
 }

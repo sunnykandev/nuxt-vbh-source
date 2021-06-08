@@ -207,10 +207,10 @@
                                     @change="onHomeVideoChange"
                                 >
                                 <center>
-                                    <v-btn class="ma-2" color="primary" fab x-small  @click="homeVideoPosterClick">
+                                    <v-btn :loading="home_video_poster_loading" class="ma-2" color="primary" fab x-small  @click="homeVideoPosterClick">
                                         <v-icon small>mdi-image-edit</v-icon>
                                     </v-btn>
-                                    <v-btn class="ma-2" color="primary" fab x-small  @click="homeVideoClick">
+                                    <v-btn :loading="home_video_loading" class="ma-2" color="primary" fab x-small  @click="homeVideoClick">
                                         <v-icon small>mdi-video-outline</v-icon>
                                     </v-btn>
                                 </center>
@@ -219,17 +219,16 @@
                                     <video
                                     :src="homepage_contents.main_video"
                                     style="cursor: pointer; max-width: 100%; border-radius: 7px; object-fit:cover;"
-                                    class="round" poster="https://d2ppe5muinjj2h.cloudfront.net/main_video_poster.jpeg" controls>
+                                    class="round" :poster="homepage_contents.main_video_poster" controls>
                                     Your browser does not support HTML video.
-                                    </video>   
+                                    </video>
                                 </div>
-                                           
                             </div>
                             <NuxtLink to="/buying_power">
-                            <v-btn large class="px-7 mx-2 my-5" rounded color="primary" elevation="0"> 
+                            <v-btn large class="px-7 mx-2 my-5" rounded color="primary" elevation="0">
                                 {{homepage_contents.home_video_btn}}
                                 &nbsp
-                                <v-icon left style="font-size:20px;">mdi-arrow-right</v-icon> 
+                                <v-icon left style="font-size:20px;">mdi-arrow-right</v-icon>
                             </v-btn>
                             </NuxtLink>
                             <v-btn fab small @click="home_video_btn_visibility=true"><v-icon>mdi-pencil</v-icon></v-btn>
@@ -243,7 +242,7 @@
                                 <v-btn class="ml-5" fab small @click="home_video_btn_visibility=false"><v-icon>mdi-check</v-icon></v-btn>
                             </div>
                             </center>
-                        </v-container> 
+                        </v-container>
 
                         <v-container>
                             <input
@@ -316,7 +315,7 @@
                                                 <v-col cols="12" sm="7" md="7" lg="7">
                                                     <div style="width:100%; background:#aaa;min-height:300px;position:relative;">
                                                         <img class="d-flex" style="max-width:100%;" :src="step.image" alt="">
-                                                        <v-btn fab small absolute style="top:15px; right:15px;" @click="homeStepImageClick(i,step.id)"><v-icon>mdi-image</v-icon></v-btn>
+                                                        <v-btn :loading="step.loading" fab small absolute style="top:15px; right:15px;" @click="homeStepImageClick(i,step.id)"><v-icon>mdi-image</v-icon></v-btn>
                                                         <v-progress-circular
                                                         v-if="step.loading"
                                                         absolute small style="position:absolute !important;top:50%; left:50%; transform:translate(-50%,-50%);"
@@ -675,8 +674,9 @@
                                                         </g>
                                                     </svg>
                                                 </button>
-                                                <video class="round power_video" poster="http://english.cscec.com/Auxiliary_column/News_round/202011/W020201111495215012173.png" style="object-fit:cover;" controls>
-                                                <source src="~/assets/countdown.mp4" type="video/mp4">
+                                                <video
+                                                :src="homepage_contents.main_video"
+                                                class="round" style="max-width:100%;" :poster="homepage_contents.main_video_poster" controls>
                                                 Your browser does not support HTML video.
                                                 </video>
                                             </div>
@@ -690,7 +690,7 @@
                         <v-container>
                             <v-row class="section">
                                 <v-col cols="12" sm="12" md="7">
-                                        <div style="position:relative;min-height:300px; background:#aaa;">
+                                        <div style="position:relative;min-height:100px; background:#aaa;">
                                             <input
                                                 ref="power_finance_image_input"
                                                 class="d-none"
@@ -699,10 +699,10 @@
                                                 @change="onPowerFinanceImageChange"
                                             >
                                             <v-img
-                                            class="shadow_far mt-n20 round"
+                                            class="shadow_far round"
                                             :src="power_contents.finance_image"
                                             ></v-img>
-                                            <v-btn absolute style="top:15px; right:15px;" fab small @click="powerFinanceImageClick">
+                                            <v-btn :loading="power_finance_image_loading" absolute style="top:15px; right:15px;" fab small @click="powerFinanceImageClick">
                                                 <v-icon>mdi-image</v-icon>
                                             </v-btn>
                                         </div>
@@ -830,7 +830,7 @@
                                         <v-btn style="text-transform:none !important" color="primary" rounded>Save Lender Data</v-btn>
                                 </v-col>
                                 <v-col cols="12" sm="12" md="6" class="d-flex align-center justify-center">
-                                    <div style="flex:1; position:relative;min-height:300px; background:#aaa;">
+                                    <div style="flex:1; position:relative;min-height:100px; background:#aaa;">
                                         <input
                                             ref="power_lender_image_input"
                                             class="d-none"
@@ -840,10 +840,10 @@
                                         >
                                         <img
                                         style="max-width:100%;"
-                                        class="d-flex shadow_far mt-n20 round"
+                                        class="d-flex shadow_far round"
                                         :src="power_contents.lender_image"
                                         />
-                                        <v-btn absolute style="top:15px; right:15px;" fab small @click="powerLenderImageClick">
+                                        <v-btn :loading="power_lender_image_loading" absolute style="top:15px; right:15px;" fab small @click="powerLenderImageClick">
                                             <v-icon>mdi-image</v-icon>
                                         </v-btn>
                                     </div>                          
@@ -856,7 +856,7 @@
                     <v-container>
                         <v-row class="section" >
                             <v-col cols="12" sm="12" md="7" class="d-flex justify-center align-center">
-                                <div style="flex:1; position:relative;min-height:300px; background:#aaa;">
+                                <div style="flex:1; position:relative;min-height:100px; background:#aaa;">
                                     <input
                                         ref="power_calc_image_input"
                                         class="d-none"
@@ -866,10 +866,10 @@
                                     >
                                     <img
                                     style="max-width:100%;"
-                                    class="d-flex shadow_far mt-n20 round"
+                                    class="d-flex shadow_far round"
                                     :src="power_contents.calc_image"
                                     />
-                                    <v-btn absolute style="top:15px; right:15px;" fab small @click="powerCalcImageClick">
+                                    <v-btn :loading="power_calc_image_loading" absolute style="top:15px; right:15px;" fab small @click="powerCalcImageClick">
                                         <v-icon>mdi-image</v-icon>
                                     </v-btn>
                                 </div>  
@@ -943,7 +943,7 @@
             <v-card flat>
                 <v-card-text>
                     <v-row class="section header_image_section" :style="{background:'url('+land_contents.header_image+') center no-repeat', backgroundSize:'cover'}">
-                        <v-btn x-small fab absolute style="top:15px; right:15px;" @click="landHeaderImageClick"><v-icon small>mdi-image</v-icon></v-btn>
+                        <v-btn :loading="land_header_image_loading" x-small fab absolute style="top:15px; right:15px;" @click="landHeaderImageClick"><v-icon small>mdi-image</v-icon></v-btn>
                         <input
                             ref="land_header_image_input"
                             class="d-none"
@@ -1037,7 +1037,7 @@
             <v-card flat>
                 <v-card-text>
                     <v-row class="section header_image_section" :style="{background:'url('+resp_contents.header_image+') center no-repeat', backgroundSize:'cover'}">
-                        <v-btn x-small fab absolute style="top:15px; right:15px;" @click="respHeaderImageClick"><v-icon small>mdi-image</v-icon></v-btn>
+                        <v-btn :loading="resp_header_image_loading" x-small fab absolute style="top:15px; right:15px;" @click="respHeaderImageClick"><v-icon small>mdi-image</v-icon></v-btn>
                         <input
                             ref="resp_header_image_input"
                             class="d-none"
@@ -1193,7 +1193,8 @@
                             <div class="d-flex mr-4" style="min-height:200px; min-width:300px;max-width:300px; position:relative; background:#aaa;">
                                 <img style="max-width:100%; object-fit:cover;" :src="item.image" alt="">
                                 <v-btn 
-                                @click="browseSlideImageClick(i)"
+                                :loading="item.loading"
+                                @click="browseSlideImageClick(i,item.id)"
                                 absolute small style="top:15px; right:15px;" fab>
                                     <v-icon>mdi-image-edit</v-icon>
                                 </v-btn>
@@ -1219,7 +1220,7 @@
                                 ></v-textarea>
                             </div>
                             <div>
-                                <v-btn class="ml-4" small fab>
+                                <v-btn class="ml-4" small fab @click="browse_contents.carousel_items.splice(i,1)">
                                     <v-icon
                                     >mdi-close</v-icon>
                                 </v-btn>
@@ -1344,6 +1345,13 @@ export default {
                     }
                 ],
             },
+            resp_header_image_loading:false,
+            land_header_image_loading:false,
+            power_calc_image_loading:false,
+            power_lender_image_loading:false,
+            power_finance_image_loading:false,
+            home_video_poster_loading:false,
+            home_video_loading:false,
             image_upload_index:0,
             browsepage_updating:false,
             resp_content_content_edit:false,
@@ -1515,19 +1523,23 @@ export default {
             this.$refs.main_video_input.click()
         },
         async onHomeVideoChange(e){
+            this.home_video_loading=true
             let formData = new FormData();
             formData.append('file', e.target.files[0]);
             formData.append('name', "main_video");
             let temp_data = await this.$utility.uploadFile(formData,"main_video",false)
+            this.home_video_loading=false
             this.homepage_contents.main_video = temp_data.location
         },
         homeVideoPosterClick(){
             this.$refs.video_poster_input.click()
         },
         async onHomeVideoPosterChange(e){
+            this.home_video_poster_loading=true
             let reader = new FileReader()
             reader.onload = async (re)=>{
-                let temp_data = await this.$utility.uploadImage(re.target.result,"main_video_poster",false)
+                let temp_data = await this.$utility.uploadImage(re.target.result,Math.floor(Math.random() * 10000000))
+                this.home_video_poster_loading=false
                 this.homepage_contents.main_video_poster = temp_data.location
             }
             if(e.target.files[0]){
@@ -1580,6 +1592,16 @@ export default {
             this.homepage_contents.home_testimonials.forEach(element => {
                 element.processing_image=""
             });
+            this.homepage_contents.home_steps.forEach((element,i)=>{
+                if(i==0){
+                    element.to = "/land"
+                }else if(i==1){
+                    element.to="/home_owner_equity_responsibility"
+                }else if(i==2){
+                    element.to="/choose_home"
+                }
+            })
+
             try{
                 let temp_post_data = {
                     page_name:"homepage",
@@ -1673,8 +1695,11 @@ export default {
         },
         onPowerFinanceImageChange:function(e){
             let reader = new FileReader()
-            reader.onload = (re)=>{
-                this.power_contents.finance_image = re.target.result
+            reader.onload = async (re)=>{
+                this.power_finance_image_loading = true
+                let temp_data = await this.$utility.uploadImage(re.target.result, Math.floor(Math.random() * 10000000))
+                this.power_contents.finance_image=temp_data.location
+                this.power_finance_image_loading = false
             }
             if(e.target.files[0]){
                 reader.readAsDataURL(e.target.files[0])
@@ -1685,8 +1710,11 @@ export default {
         },
         onPowerLenderImageChange:function(e){
             let reader = new FileReader()
-            reader.onload = (re)=>{
-                this.power_contents.lender_image = re.target.result
+            reader.onload = async (re)=>{
+                this.power_lender_image_loading = true
+                let temp_data = await this.$utility.uploadImage(re.target.result, Math.floor(Math.random() * 10000000))
+                this.power_contents.lender_image=temp_data.location
+                this.power_lender_image_loading = false
             }
             if(e.target.files[0]){
                 reader.readAsDataURL(e.target.files[0])
@@ -1698,8 +1726,11 @@ export default {
         },
         onPowerCalcImageChange:function(e){
             let reader = new FileReader()
-            reader.onload = (re)=>{
-                this.power_contents.calc_image = re.target.result
+            reader.onload = async (re)=>{
+                this.power_calc_image_loading = true
+                let temp_data = await this.$utility.uploadImage(re.target.result, Math.floor(Math.random() * 10000000))
+                this.power_contents.calc_image=temp_data.location
+                this.power_calc_image_loading = false
             }
             if(e.target.files[0]){
                 reader.readAsDataURL(e.target.files[0])
@@ -1711,8 +1742,11 @@ export default {
         },
         onLandHeaderImageChange:function(e){
             let reader = new FileReader()
-            reader.onload = (re)=>{
-                this.land_contents.header_image = re.target.result
+            reader.onload = async (re)=>{
+                this.land_header_image_loading = true
+                let temp_data = await this.$utility.uploadImage(re.target.result, Math.floor(Math.random() * 10000000))
+                this.land_contents.header_image=temp_data.location
+                this.land_header_image_loading = false
             }
             if(e.target.files[0]){
                 reader.readAsDataURL(e.target.files[0])
@@ -1724,8 +1758,11 @@ export default {
         },
         onRespHeaderImageChange:function(e){
             let reader = new FileReader()
-            reader.onload = (re)=>{
-                this.resp_contents.header_image = re.target.result
+            reader.onload = async (re)=>{
+                this.resp_header_image_loading = true
+                let temp_data = await this.$utility.uploadImage(re.target.result, Math.floor(Math.random() * 10000000))
+                this.resp_contents.header_image=temp_data.location
+                this.resp_header_image_loading = false
             }
             if(e.target.files[0]){
                 reader.readAsDataURL(e.target.files[0])
@@ -1737,18 +1774,33 @@ export default {
                 image:"",
                 title:"New Slide Title",
                 subtitle:"New Slide Subtitle",
-                content:"New slide content..."
+                content:"New slide content...",
+                loading:false,
+                id:Math.floor(Math.random() * 10000000),
             }
             this.browse_contents.carousel_items.push(temp_obj)
         },
-        browseSlideImageClick(i){
+        browseSlideImageClick(i,id){
             this.$refs.browse_slide_image_input.click()
             this.slide_image_change_index = i
+            this.image_upload_index = id
         },
         onBrowseSlideImageChange:function(e){
             let reader = new FileReader()
-            reader.onload = (re)=>{
-                this.browse_contents.carousel_items[this.slide_image_change_index].image = re.target.result
+            reader.onload = async (re)=>{
+                let temp_image_index = this.image_upload_index
+                //this.homepage_contents.carousel_items[this.slide_image_change_index].image = re.target.result
+              
+                this.browse_contents.carousel_items[this.slide_image_change_index].loading=true
+                let temp_data = await this.$utility.uploadImage(re.target.result,temp_image_index)
+                this.browse_contents.carousel_items.forEach(item => {
+                    if(item.id == temp_image_index){
+                        item.image = temp_data.location
+                        item.id=temp_data.name
+                        item.loading=false
+                        return false
+                    }
+                });
             }
             if(e.target.files[0]){
                 reader.readAsDataURL(e.target.files[0])

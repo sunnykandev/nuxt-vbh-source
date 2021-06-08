@@ -114,7 +114,7 @@
                         flex-direction: column;
                         align-items: center;">
                             <h1 class="mb-7" style="color:white; font-size:38px;">Need Personal Help? We're Here!</h1>
-                            <v-btn large class="px-7 mx-2 contact_button" elevation="0"> 
+                            <v-btn large class="px-7 mx-2 contact_button" elevation="0" @click="contactPopup(true)"> 
                                 Contact Us
                             </v-btn>
                         </div>
@@ -247,6 +247,7 @@ export default {
             saveLandInfo:'localStorage/changeLandInformation',
             changeLandCost:'localStorage/changeLandCost',
             savePageContents:'localStorage/savePageContents',
+            contactPopup:'global/contactPopup' 
         })
     }
 }

@@ -214,7 +214,7 @@
                                 <v-col cols="12" sm="12" md="6" lg="6" class="upload_image_container">
                                     <h5 class="upload_image_title">Upload Image</h5>
                                     <v-image-input
-                                    v-model="modal_option_image"
+                                    v-model="modal_option_image_processing"
                                     :image-quality="1"
                                     clearable
                                     image-format="jpeg"
@@ -223,6 +223,11 @@
                                     overlayPadding="20px"
                                     fullWidth
                                     />
+                                    <center>
+                                        <v-btn :loading="modal_option_image_loading" @click="uploadModalOptionImage" rounded small color="primary">
+                                            Ok, Upload
+                                        </v-btn>
+                                    </center>
                                 </v-col>
                             </v-row>
                         </v-container>
@@ -258,7 +263,7 @@
 
                                 <v-col cols="12" sm="12" md="6" lg="6">
                                     <v-image-input
-                                    v-model="selection.option_img"
+                                    v-model="selection.option_img_processing"
                                     :image-quality="1"
                                     clearable
                                     image-format="jpeg"
@@ -267,6 +272,9 @@
                                     overlayPadding="20px"
                                     fullWidth
                                     />
+                                    <center>
+                                        <v-btn :loading="selection.loading" @click="uploadSelectionImage(i,selection.id)" rounded color="primary" small>Ok, Upload</v-btn>
+                                    </center>
                                 </v-col>
                             </v-row>
                             <v-btn class="px-4 mb-4 mr-3" small rounded color="primary" elevation="0" @click="newSelection">New Selection</v-btn>
@@ -363,7 +371,7 @@
                                 <v-row>
                                     <v-col cols="12" md="6">
                                         <v-image-input
-                                        v-model="submodal_main_image"
+                                        v-model="submodal_main_image_processing_data"
                                         :image-quality="1"
                                         clearable
                                         image-format="jpeg"
@@ -372,6 +380,11 @@
                                         overlayPadding="20px"
                                         fullWidth
                                         />
+                                        <v-btn
+                                        :loading="submodal_main_image_loading"
+                                        @click="submodalMainImageUpload"
+                                        rounded color="primary" small
+                                        >Ok, Upload this image</v-btn>
                                     </v-col>
                                     <v-col class="subdesign_info_container" cols="12" md="6">
                                         <v-row class="mt-0">
@@ -424,6 +437,7 @@
                                         <div class="submodal_img_thumbnail_container mr-2 mb-2" v-for="(img,i) in submodal_images" :key="i">
                                             <img class="submodal_img_thumbnail" :src="img.src" alt="">
                                             <v-btn 
+                                            :loading="img.loading"
                                             fab 
                                             absolute 
                                             dark 
@@ -577,10 +591,18 @@
                                             <v-col cols="12" sm="6" md="3">
                                                 <v-sheet class="stylemodal_item_image_container">
                                                     <v-sheet v-if="item.color&&!item.material" style="width:50px; height:50px;" :color="item.color"></v-sheet>
-                                                    <img class="stylemodal_item_image" :src="item.material" alt="">
+                                                    <div class="" style="position:relative;">
+                                                        <img class="stylemodal_item_image" :src="item.material" alt="">
+                                                        <v-progress-circular
+                                                        v-if="item.loading"
+                                                        absolute small style="position:absolute !important;top:50%; left:50%; transform:translate(-50%,-50%);"
+                                                        indeterminate
+                                                        color="primary"
+                                                        ></v-progress-circular>
+                                                    </div>
                                                     <div class="stylemodal_item_image_btn_container">
                                                         <v-spacer></v-spacer>
-                                                        <v-btn class="stylemodal_item_image_btn" small  @click="styleModalItemImageClick(i)"><v-icon>mdi-image</v-icon> &nbsp Image</v-btn>
+                                                        <v-btn class="stylemodal_item_image_btn" small  @click="styleModalItemImageClick(i, item.id)"><v-icon>mdi-image</v-icon> &nbsp Image</v-btn>
                                                         <v-spacer></v-spacer>
 
                                                         <v-color-input
@@ -639,6 +661,7 @@ import VColorInput from 'vuetify-color-input';
 export default {
     data () {
       return {
+          option_modal_loading:false,
         new_home_error:"",
         savingEditHome:false,
         savingNewHome:false,
@@ -649,6 +672,7 @@ export default {
 
         submodal_stylemodal_title:"",
         submodal_stylemodal_items:[],
+        submodal_stylemodal_image_upload_id:"",
         submodal_stylemodal_image_selecting:false,
         submodal_stylemodal_image:{
             src:"",
@@ -668,6 +692,8 @@ export default {
         submodal_edit_id:0,
         submodal_image_selecting:false,
         submodal_main_image:"",
+        submodal_main_image_processing_data:"",
+        submodal_main_image_loading:false,
         submodal_type:"add",
         subdesign_modal:false,
         subdesigns:[],
@@ -723,6 +749,8 @@ export default {
         modal_option_desc:"",
         modal_option_category:"",
         modal_option_image:"",
+        modal_option_image_processing:"",
+        modal_option_image_loading:false,
         modal_type : "",
         modal_option_type:"",
         snackbar:false,
@@ -787,6 +815,18 @@ export default {
         },
     },
     methods:{
+        async uploadSelectionImage(i, id){
+            let temp_id=id
+            this.modal_selections[i].loading=true
+            let temp_data = await this.$utility.uploadImage(this.modal_selections[i].option_img_processing, id)
+            this.modal_selections.forEach(element => {
+                if(element.id==temp_id){
+                    element.option_img=temp_data.location
+                    element.id = temp_data.name
+                }
+            });
+            this.modal_selections[i].loading=false
+        },
         removeSubdesign:function(i){
             this.remove_subdesign_comfirm_modal = true
             this.remove_subdesign_id = i
@@ -811,6 +851,18 @@ export default {
                 this.new_baseprice = temp_home.baseprice
                 this.selected_options = temp_home.options
                 this.subdesigns = temp_home.subdesigns
+                temp_home.options.forEach(option => {
+                    let temp_a = 0
+                    this.options.forEach(element => {
+                        if(element._id==option._id){
+                            temp_a = 1
+                            return false
+                        }
+                    });
+                    if(!temp_a){
+                        this.options.push(option)
+                    }
+                });
             } catch (error) {
                 alert(error.response.data.message)
             }
@@ -901,9 +953,16 @@ export default {
                 this.submodal_images = this.subdesigns[0].images
             }
             this.submodal_main_image = ''
+            this.submodal_main_image_processing_data = ''
             this.submodal_type = "add"
             this.subdesign_modal = true
             this.subdesign_modal=true
+        },
+        async submodalMainImageUpload(){
+            this.submodal_main_image_loading=true
+            let temp_data = await this.$utility.uploadImage(this.submodal_main_image_processing_data, Math.floor(Math.random() * 10000000),)
+            this.submodal_main_image = temp_data.location
+            this.submodal_main_image_loading=false
         },
         saveSubdesign:function(){
             let temp_subdesign = {
@@ -931,6 +990,7 @@ export default {
             this.submodal_styles=[]
             this.submodal_images=[]
             this.submodal_main_image=""
+            this.submodal_main_image_processing_data =""
         },
         editSubdesign:function(i, subdesign){
             this.submodal_title = subdesign.title
@@ -942,6 +1002,7 @@ export default {
             this.submodal_desc = subdesign.desc
             this.submodal_styles = subdesign.styles
             this.submodal_images = subdesign.images
+            this.submodal_main_image_processing_data = subdesign.main_image
             this.submodal_main_image = subdesign.main_image
             this.submodal_type = "edit"
             this.subdesign_modal = true
@@ -973,6 +1034,7 @@ export default {
             this.submodal_styles=[]
             this.submodal_images=[]
             this.submodal_main_image=""
+            this.submodal_main_image_processing_data =""
         },
         createStyle:function(){
             let temp_style = {
@@ -1034,11 +1096,13 @@ export default {
         },
         stylemodalAddPart:function(){
             let temp_object = {
+                id:Math.floor(Math.random() * 10000000),
                 part:"",
                 category:"",
                 colorname:"",
                 color:"",
                 material:"",
+                loading:false
             }
             this.submodal_stylemodal_items.push(temp_object)
         },
@@ -1050,10 +1114,7 @@ export default {
             this.subdesign_style_modal=true
             this.imageValue=""
         },
-        styleModalItemImageClick:function(i){
-            this.submodal_stylemodal_image_select_id=i
-            this.$refs.stylemodal_styleitem_image_uploader.click()
-        },
+        
         submodal_image_add_btn_click:function(){
             this.submodal_image_selecting = true
             window.addEventListener('focus', () => {
@@ -1061,13 +1122,7 @@ export default {
             }, { once: true })
             this.$refs.submodal_image_uploader.click()
         },
-        submodal_stylemodal_image_add_btn_click:function(){
-            this.submodal_stylemodal_image_selecting = true
-            window.addEventListener('focus', () => {
-                this.submodal_stylemodal_image_selecting = false
-            }, { once: true })
-            this.$refs.submodal_style_modal_image_uploader.click()
-        },
+        
         submodal_style_image_click:function(i){
             this.submodal_style_image_selecting = true
             window.addEventListener('focus', () => {
@@ -1075,25 +1130,51 @@ export default {
             }, { once: true })
             this.$refs.submodal_style_image_input.click()
         },
+        styleModalItemImageClick:function(i,id){
+            this.submodal_stylemodal_image_select_id=i
+            this.submodal_stylemodal_image_upload_id=id
+            this.$refs.stylemodal_styleitem_image_uploader.click()
+        },
         onStyleItemImageChanged:function(e){
             let reader = new FileReader()
-            reader.onload = (re)=>{
+            reader.onload = async(re)=>{
+                let temp_id=this.submodal_stylemodal_image_upload_id
                 this.submodal_stylemodal_items[this.submodal_stylemodal_image_select_id].color=""
                 this.submodal_stylemodal_items[this.submodal_stylemodal_image_select_id].material = re.target.result
+                this.submodal_stylemodal_items[this.submodal_stylemodal_image_select_id].loading = true
+                let temp_data = await this.$utility.uploadImage(re.target.result, temp_id)
+                this.submodal_stylemodal_items.forEach(element => {
+                    if(element.id==temp_id){
+                        element.material=temp_data.location
+                        element.id=temp_data.id
+                        element.loading=false
+                    }
+                });
             }
             if(e.target.files[0]){
                 reader.readAsDataURL(e.target.files[0])
             }
         },
+        submodal_stylemodal_image_add_btn_click:function(){
+            this.submodal_stylemodal_image_selecting = true
+            window.addEventListener('focus', () => {
+            }, { once: true })
+            this.$refs.submodal_style_modal_image_uploader.click()
+        },
         onSubmodalStyleModalImageChanged:function(e){
-            this.submodal_style_image_selecting = false
+            
             let reader = new FileReader()
-            reader.onload = (re)=>{
+            reader.onload = async(re)=>{
                 let temp_obj = {
                     src:re.target.result,
-                    new:true
+                    new:true,
                 }
                 this.submodal_stylemodal_image=temp_obj
+
+                let temp_data = await this.$utility.uploadImage(re.target.result , Math.floor(Math.random() * 100000000),)
+
+                this.submodal_stylemodal_image={src:temp_data.location, new:true}
+                this.submodal_stylemodal_image_selecting = false
             }
             reader.readAsDataURL(e.target.files[0])
         },
@@ -1103,22 +1184,39 @@ export default {
             e.target.files.forEach((file,i) => {
                 reader[i] = new FileReader()
                 reader[i].onload = (re)=>{
+                    let temp_id = Math.floor(Math.random() * 100000000)
                     let temp_obj = {
+                        id:temp_id,
                         src:re.target.result,
-                        new:true
+                        new:true,
+                        loading:true
                     }
                     this.submodal_images.push(temp_obj)
+                    this.uploadSubmodalImage(re.target.result, temp_id)
                 }
                 reader[i].readAsDataURL(file)
             });
         },
+        async uploadSubmodalImage(data, id){
+            let temp_data = await this.$utility.uploadImage(data,id)
+            this.submodal_images.forEach(element => {
+                if(element.id==id){
+                    element.src=temp_data.location
+                    element.id=temp_data.name
+                    element.loading=false
+                }
+            });
+        },
         newSelection:function(){
             let temp_new_selection = {
+                id:Math.floor(Math.random() * 10000000),
                 select_id:this.modal_new_selections.length+1,
                 option_title:"",
                 option_desc:"",
                 price:undefined,
-                option_img:""
+                option_img:"",
+                option_img_processing:"",
+                loading:false
             }
             this.modal_new_selections.push(temp_new_selection)
         },
@@ -1162,8 +1260,12 @@ export default {
             this.modal_option_unit = item.unit
             this.modal_option_category = item.category
             this.modal_option_image = item.help_img
+            this.modal_option_image_processing = item.help_img
             this.modal_option_type = item.type
             this.modal_new_selections = item.selections
+            this.modal_new_selections.forEach(element => {
+                element.option_img_processing=element.option_img
+            });
             this.option_modal = true
         },
         deleteOption:function(item){
@@ -1196,6 +1298,9 @@ export default {
                 this.modal_new_selections.unshift(temp_new_selection)
             }
             try {
+                this.modal_selections.forEach(element => {
+                    element.option_img_processing=element.option_img
+                });
                 let res = await this.$axios.post('/api/option',{
                     title:this.modal_option_title,
                     category:this.modal_option_category,
@@ -1203,7 +1308,7 @@ export default {
                     desc:this.modal_option_desc,
                     price:this.modal_option_price,
                     unit:this.modal_option_unit,
-                    help_img:"https://preview.colorlib.com/theme/homes/img/rooms/1.jpg",
+                    help_img:this.modal_option_image,
                     selections:JSON.stringify(this.modal_new_selections)
                 })
                 this.option_modal_loading = false
@@ -1224,9 +1329,18 @@ export default {
                 this.modal_error = e.response.data.message
             }
         },
+        async uploadModalOptionImage(){
+            this.modal_option_image_loading=true
+            let temp_data = await this.$utility.uploadImage(this.modal_option_image_processing, Math.floor(Math.random() * 10000000),)
+            this.modal_option_image = temp_data.location
+            this.modal_option_image_loading=false
+        },
         async saveOption() {
             this.option_modal_loading = true
             try {
+                this.modal_selections.forEach(element => {
+                    element.option_img_processing=""
+                });
                 let res = await this.$axios.put('/api/option/'+this.edit_id,{
                     title:this.modal_option_title,
                     category:this.modal_option_category,
@@ -1382,6 +1496,11 @@ tr:hover{
     height: 30px;
     padding: 4px 5px 4px 17px;
 }
+
+button{
+    text-transform: none !important;
+}
+
 </style>
 <style lang="scss">
     .tooltip {

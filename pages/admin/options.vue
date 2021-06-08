@@ -161,7 +161,7 @@
                         <v-col cols="12" sm="12" md="6" lg="6" class="upload_image_container">
                             <h5 class="upload_image_title">Upload Image</h5>
                             <v-image-input
-                            v-model="modal_option_image"
+                            v-model="modal_option_image_processing"
                             :image-quality="1"
                             clearable
                             image-format="jpeg"
@@ -170,6 +170,11 @@
                             overlayPadding="20px"
                             fullWidth
                             />
+                            <center>
+                                <v-btn :loading="modal_option_image_loading" @click="uploadModalOptionImage" rounded small color="primary">
+                                    Ok, Upload
+                                </v-btn>
+                            </center>
                         </v-col>
                     </v-row>
                 </v-container>
@@ -205,7 +210,7 @@
 
                         <v-col cols="12" sm="12" md="6" lg="6">
                             <v-image-input
-                            v-model="selection.option_img"
+                            v-model="selection.option_img_processing"
                             :image-quality="1"
                             clearable
                             image-format="jpeg"
@@ -214,6 +219,9 @@
                             overlayPadding="20px"
                             fullWidth
                             />
+                            <center>
+                                <v-btn :loading="selection.loading" @click="uploadSelectionImage(i,selection.id)" rounded color="primary" small>Ok, Upload</v-btn>
+                            </center>
                         </v-col>
                     </v-row>
                     <v-btn class="px-4 mb-4 mr-3" small rounded color="primary" elevation="0" @click="newSelection">New Selection</v-btn>
@@ -306,7 +314,8 @@ export default {
         edit_id:0,
 
         categories:[],
-
+        modal_option_image_loading:false,
+        modal_option_image_processing:"",
         modal_existing_selections:[],
         modal_new_selections:[],
         modal_option_title:"",
@@ -361,13 +370,34 @@ export default {
         },
     },
     methods:{
+        async uploadSelectionImage(i, id){
+            let temp_id=id
+            this.modal_selections[i].loading=true
+            let temp_data = await this.$utility.uploadImage(this.modal_selections[i].option_img_processing, id)
+            this.modal_selections.forEach(element => {
+                if(element.id==temp_id){
+                    element.option_img=temp_data.location
+                    element.id = temp_data.name
+                }
+            });
+            this.modal_selections[i].loading=false
+        },
+        async uploadModalOptionImage(){
+            this.modal_option_image_loading=true
+            let temp_data = await this.$utility.uploadImage(this.modal_option_image_processing, Math.floor(Math.random() * 10000000),)
+            this.modal_option_image = temp_data.location
+            this.modal_option_image_loading=false
+        },
         newSelection:function(){
             let temp_new_selection = {
+                id:Math.floor(Math.random() * 10000000),
                 select_id:this.modal_new_selections.length+1,
                 option_title:"",
                 option_desc:"",
                 price:undefined,
-                option_img:""
+                option_img:"",
+                option_img_processing:"",
+                loading:false
             }
             this.modal_new_selections.push(temp_new_selection)
         },
@@ -408,6 +438,9 @@ export default {
                 this.modal_new_selections.unshift(temp_new_selection)
             }
             try {
+                this.modal_selections.forEach(element => {
+                    element.option_img_processing=element.option_img
+                });
                 let res = await this.$axios.post('/api/option',{
                     title:this.modal_option_title,
                     category:this.modal_option_category,
@@ -441,6 +474,9 @@ export default {
             this.option_modal_loading = true
             
             try {
+                this.modal_selections.forEach(element => {
+                    element.option_img_processing=""
+                });
                 let res = await this.$axios.put('/api/option/'+this.edit_id,{
                     title:this.modal_option_title,
                     category:this.modal_option_category,
@@ -479,8 +515,12 @@ export default {
             this.modal_option_unit = item.unit
             this.modal_option_category = item.category
             this.modal_option_image = item.help_img
+            this.modal_option_image_processing = item.help_img
             this.modal_option_type = item.type
             this.modal_new_selections = item.selections
+            this.modal_new_selections.forEach(element => {
+                element.option_img_processing=element.option_img
+            });
             this.option_modal = true
         },
         deleteOption:function(item){

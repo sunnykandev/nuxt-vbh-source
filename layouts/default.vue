@@ -76,6 +76,7 @@
       :elevation="0"
       :elevate-on-scroll='true'
     >
+      
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />     
       <img
         class="mx-2"
@@ -220,6 +221,7 @@
       
       <Login/>
       <Signup/>
+      <Contact/>
       
     </v-app-bar>
     <v-main>
@@ -241,12 +243,14 @@ import {mapMutations} from 'vuex'
 import Snackbar from '../components/Snackbar.vue'
 import Login from '../components/dialogs/Login'
 import Signup from '../components/dialogs/Signup'
+import Contact from '../components/dialogs/Contact'
 import LandSvg  from '~/components/custom_icons/LandSvg'
 import DesignSvg  from '~/components/custom_icons/DesignSvg'
 import HomeCare  from '~/components/custom_icons/HomeCare'
 
 export default {
   components: {
+    Contact,
     Snackbar,
     Login,
     Signup,

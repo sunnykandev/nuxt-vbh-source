@@ -1,5 +1,5 @@
 <template>
-    <v-row justify="center" align="center">
+    <v-row justify="center" align="center" class="light_gray_back">
       <v-carousel hide-delimiters>
         <v-carousel-item
           v-for="(item,i) in browse_contents.carousel_items"
@@ -279,6 +279,10 @@ export default {
       let temp_filter_garage = this.filter_garage
       let temp_filter_max_price = this.price_range[1]
       let temp_filter_min_price = this.price_range[0]
+      console.log("temp_filter_size:",temp_filter_size,"temp_filter_beds",temp_filter_beds,
+      "temp_filter_baths",temp_filter_baths,"temp_filter_garage",temp_filter_garage,
+      "temp_filter_max_price",temp_filter_max_price,"temp_filter_min_price",temp_filter_min_price
+      )
 
       let saved_home_ids = this.$store.state.localStorage.customized_homes.map(a => a.id);
       let loved_home_ids = this.$store.state.localStorage.favorite_homes
@@ -286,34 +290,34 @@ export default {
       if(this.$route.query.loved){
         console.log('1')
         temp_filtered_homes = this.homes.filter(function (home) {
-            return home.size>temp_filter_size&&
-            home.beds>temp_filter_beds&&
-            home.baths>temp_filter_baths&&
-            home.garage>temp_filter_garage&&
-            home.baseprice>temp_filter_min_price&&
-            home.baseprice<temp_filter_max_price&&
+            return home.size>=temp_filter_size&&
+            home.beds>=temp_filter_beds&&
+            home.baths>=temp_filter_baths&&
+            home.garage>=temp_filter_garage&&
+            home.baseprice>=temp_filter_min_price&&
+            home.baseprice<=temp_filter_max_price&&
             loved_home_ids.includes(home.id)
         })
       }else if(this.$route.query.saved){
         console.log('1')
         temp_filtered_homes = this.homes.filter(function (home) {
-            return home.size>temp_filter_size&&
-            home.beds>temp_filter_beds&&
-            home.baths>temp_filter_baths&&
-            home.garage>temp_filter_garage&&
-            home.baseprice>temp_filter_min_price&&
-            home.baseprice<temp_filter_max_price&&
+            return home.size>=temp_filter_size&&
+            home.beds>=temp_filter_beds&&
+            home.baths>=temp_filter_baths&&
+            home.garage>=temp_filter_garage&&
+            home.baseprice>=temp_filter_min_price&&
+            home.baseprice<=temp_filter_max_price&&
             saved_home_ids.includes(home.id)
         })
       }else{
         console.log('1')
         temp_filtered_homes = this.homes.filter(function (home) {
-            return home.size>temp_filter_size&&
-            home.beds>temp_filter_beds&&
-            home.baths>temp_filter_baths&&
-            home.garage>temp_filter_garage&&
-            home.baseprice>temp_filter_min_price&&
-            home.baseprice<temp_filter_max_price
+            return home.size>=temp_filter_size&&
+            home.beds>=temp_filter_beds&&
+            home.baths>=temp_filter_baths&&
+            home.garage>=temp_filter_garage&&
+            home.baseprice>=temp_filter_min_price&&
+            home.baseprice<=temp_filter_max_price
         })
       }
       
@@ -490,23 +494,12 @@ export default {
     color: #0180ff !important;
   }
 
-  .home_filter_item{
-    max-width: 150px;
-    float: right;
-    margin-right: 10px !important;
-  }
+  
   .home_filter_sort{
     float: left;
   }
   .v-select.v-input--dense .v-select__selection--comma{
     font-weight: 600;
-  }
-  .v-text-field--outlined.v-input--dense .v-label{
-    font-weight: 600;
-    color: #000;
-  }
-  .home_filter_item .v-input__control{
-    height: 44px;
   }
   .v-slide-group__next>i{
     margin-bottom: 4px;
@@ -535,7 +528,7 @@ export default {
     border-radius: 5px;
     box-shadow: 2px 15px 30px rgb(0 0 0 / 10%);
   }
-  .v-application{
+  .light_gray_back{
     background: #f1f2f3 !important;
   }
 </style>

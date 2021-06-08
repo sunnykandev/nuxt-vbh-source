@@ -48,8 +48,7 @@
                                             </g>
                                         </svg>
                                     </button>
-                                    <video class="round" poster="http://english.cscec.com/Auxiliary_column/News_round/202011/W020201111495215012173.png" style="object-fit:cover;" controls>
-                                    <source src="~/assets/countdown.mp4" type="video/mp4">
+                                    <video :src="homepage_contents.main_video" class="round" :poster="homepage_contents.main_video_poster" style="object-fit:cover;" controls>
                                     Your browser does not support HTML video.
                                     </video>
                                 </div>
@@ -161,27 +160,30 @@
                             <p v-html="makeLineBreak(power_contents.calculator_content)" class="section_header_content">
                             </p>
                             <v-text-field
+                            v-model="total_invest"
                                 label="Total investment"
-                               
+                                type="number"
                                 outlined
                             ></v-text-field>   
 
                             <v-text-field
+                            v-model="total_interest"
                                 label="Interest Rate"
-                               
+                                type.number
                                 outlined
                             ></v-text-field>
 
                             <v-text-field
+                            v-model="loan_duration"
                                 label="Loan Duration"
-                                
+                                type="number"
                                 outlined
                             ></v-text-field>
                             <v-divider></v-divider>
                             <div class="d-flex align-center mt-5">
                                 <span>Monthly Payment</span>
                                 <v-spacer></v-spacer>
-                                <span style="font-size: 37px;    font-weight: 500;    color: #36b13a;">$1000</span>
+                                <span style="font-size: 37px;    font-weight: 500;    color: #36b13a;">${{monthlyPay}}</span>
                             </div>
                       </v-col>
                   </v-row>
@@ -253,7 +255,7 @@
                                             <p v-html="makeLineBreak(step.contents)">
                                             </p>
                                             <div class="d-flex">
-                                                <v-btn outlined class="px-4 mx-2" rounded color="primary" elevation="0">
+                                                <v-btn :to="step.to" outlined class="px-4 mx-2" rounded color="primary" elevation="0">
                                                     <v-icon left style="font-size:20px;">mdi-arrow-right</v-icon>
                                                     {{step.btn}}
                                                 </v-btn>
@@ -265,7 +267,6 @@
                         </v-tab-item>
                         </v-tabs-items>
                     </v-card>
-                                   
               </v-container>
           </v-row>
       </v-container>
@@ -288,7 +289,10 @@ export default {
         lender_company:"",
         lender_name:"",
         power_contents:{},
-        homepage_contents:{}
+        homepage_contents:{},
+        total_invest:"",
+        total_interest:"",
+        loan_duration:""
     }),
 
     components: {
@@ -305,7 +309,19 @@ export default {
             this.lender_company = this.$store.state.localStorage.lender_data.lender_company
         }
     },
-
+    computed:{
+        monthlyPay(){
+            if(this.total_invest&&this.total_interest&&this.loan_duration){
+                
+                let p = parseInt(this.total_invest)
+                let i = parseInt(this.total_interest)
+                let n = parseInt(this.loan_duration)
+                return Math.round(p/[ (1 + i)^n-1]/[ i*(1 + i)^n ])
+            }else{
+                return ""
+            }
+        }
+    },
     methods:{
         async fetchPageContents(){
         let res = await this.$axios.get('/api/pagecontents/allpages')

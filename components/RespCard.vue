@@ -1,5 +1,5 @@
 <template>
-    <v-card class="question_card">
+    <v-card class="question_card" style="padding:5px;">
         <div class="question_container">
             <v-row>
                 <v-col class="resp_title_container" cols="12" sm="12" md="5" lg="5">
@@ -81,7 +81,6 @@ export default {
 <style>
 .question_card{
     max-width:1000px;
-    padding: 5px;
     border-radius: 7px !important;
     border: solid 1px #c7c7c7 !important;
     border-left:solid 2px #0f5496 !important ;
